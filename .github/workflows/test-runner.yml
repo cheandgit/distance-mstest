@@ -1,1 +1,37 @@
+name: MSTest Runner
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '7.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore YourSolution.sln
+
+    - name: Build solution
+      run: dotnet build YourSolution.sln --configuration Release --no-restore
+
+    - name: Run tests
+      run: dotnet test YourTestProject/YourTestProject.csproj --configuration Release --no-build --logger "trx;LogFileName=TestResults.trx"
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      with:
+        name: TestResults
+        path: YourTestProject/TestResults/TestResults.trx
 
