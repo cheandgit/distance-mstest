@@ -27,11 +27,11 @@ jobs:
       run: dotnet build YourSolution.sln --configuration Release --no-restore
 
     - name: Run tests
-      run: dotnet test YourTestProject/YourTestProject.csproj --configuration Release --no-build --logger "trx;LogFileName=TestResults.trx"
+      run: dotnet test TestProject/TestProject.csproj --configuration Release --no-build --logger "trx;LogFileName=TestResults.trx"
 
     - name: Upload test results
       uses: actions/upload-artifact@v3
       with:
         name: TestResults
-        path: YourTestProject/TestResults/TestResults.trx
+        path: TestProject/TestResults/TestResults.trx
 
