@@ -1,1 +1,23 @@
-namespace DistanceTest;\ninternal class Distance\n{\n    //Расстояние от точки P(px, py) до отрезка AB с координатами A(ax, ay), B(bx, by)\n        public static double GetDistance(double px, double py, double ax, double ay, double bx, double by)\n    {\n        double abX = bx - ax;\n        double abY = by - ay;\n\n        if (abX == 0 && abY == 0)\n        {\n            return Math.Sqrt((px - ax) * (px - ax) + (py - ay) * (py - ay));\n        }\n\n        double apX = px - ax;\n        double apY = py - ay;\n\n        double dotProduct = apX * abX + apY * abY;\n\n        double lengthSq = abX * abX + abY * abY;\n\n        double d = dotProduct / lengthSq;\n\n        d = Math.Max(0, Math.Min(1, d));\n\n        double nearX = ax + d * abX;\n        double nearY = ay + d * abY;\n\n        return Math.Sqrt((px - nearX) * (px - nearX) + (py - nearY) * (py - nearY));\n    }\n}
+namespace DistanceTest;
+internal class Distance
+{
+    //Расстояние от точки P(px, py) до отрезка AB с координатами A(ax, ay), B(bx, by)
+    public static double GetDistance(double px, double py, double ax, double ay, double bx, double by)
+    {
+        double abX = bx - ax;
+        double abY = by - ay;
+        if (abX == 0 && abY == 0)
+        {
+            return Math.Sqrt((px - ax) * (px - ax) + (py - ay) * (py - ay));
+        }
+        double apX = px - ax;
+        double apY = py - ay;
+        double dotProduct = apX * abX + apY * abY;
+        double lengthSq = abX * abX + abY * abY;
+        double d = dotProduct / lengthSq;
+        d = Math.Max(0, Math.Min(1, d));
+        double nearX = ax + d * abX;
+        double nearY = ay + d * abY;
+        return Math.Sqrt((px - nearX) * (px - nearX) + (py - nearY) * (py - nearY));
+    }
+}
