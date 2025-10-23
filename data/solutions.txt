@@ -1,7 +1,7 @@
 namespace DistanceTest;
 internal class Distance
 {
-    //Расстояние от точки P(px, py) до отрезка AB с координатами A(ax, ay), B(bx, by)
+    // Расстояние от точки P(px, py) до отрезка AB с координатами A(ax, ay), B(bx, by)
     public static double GetDistance(double px, double py, double ax, double ay, double bx, double by)
     {
         double abX = bx - ax;
