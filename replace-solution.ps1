@@ -1,51 +1,73 @@
-#!/bin/pwsh
-
 param(
     [string]$StudentSolutionFile = "data/solutions.txt",
     [string]$ProjectFilePath = "TestProject/Distance.cs"
 )
 
-Write-Host "Replacing solution in: $ProjectFilePath"
-Write-Host "Using student solution from: $StudentSolutionFile"
+Write-Host "=== Replacing Student Solution ==="
+Write-Host "Source: $StudentSolutionFile"
+Write-Host "Target: $ProjectFilePath"
 
-# Проверяем файлы
+# Проверяем существование файлов
 if (-not (Test-Path $StudentSolutionFile)) {
-    Write-Error "Student solution file not found: $StudentSolutionFile"
+    Write-Error "❌ Student solution file not found: $StudentSolutionFile"
+    Write-Host "Available files in data/:"
+    if (Test-Path "data") {
+        Get-ChildItem "data" -File
+    }
     exit 1
 }
 
 if (-not (Test-Path $ProjectFilePath)) {
-    Write-Error "Project file not found: $ProjectFilePath"
+    Write-Error "❌ Project file not found: $ProjectFilePath"
+    Write-Host "Available files in TestProject/:"
+    if (Test-Path "TestProject") {
+        Get-ChildItem "TestProject" -File
+    }
     exit 1
 }
 
 # Читаем решение студента
-$studentCode = Get-Content $StudentSolutionFile -Raw
-Write-Host "Read student solution ($($studentCode.Length) characters)"
-
-# Проверяем, что решение содержит нужный класс и метод
-if ($studentCode -notmatch "class Distance" -or $studentCode -notmatch "GetDistance") {
-    Write-Warning "Student solution may not contain required class/method"
-}
+Write-Host "Reading student solution..."
+$studentCode = Get-Content $StudentSolutionFile -Raw -Encoding UTF8
+Write-Host "✓ Read student solution ($($studentCode.Length) characters)"
 
 # Создаем backup оригинального файла
 $backupFile = "$ProjectFilePath.backup"
-Copy-Item -Path $ProjectFilePath -Destination $backupFile -Force
-Write-Host "Created backup: $backupFile"
+try {
+    Copy-Item -Path $ProjectFilePath -Destination $backupFile -Force
+    Write-Host "✓ Created backup: $backupFile"
+}
+catch {
+    Write-Error "❌ Failed to create backup: $_"
+    exit 1
+}
 
 # Заменяем содержимое файла
 try {
-    Set-Content -Path $ProjectFilePath -Value $studentCode -ErrorAction Stop
-    Write-Host "Successfully replaced solution in: $ProjectFilePath"
+    Write-Host "Replacing solution in project..."
+    Set-Content -Path $ProjectFilePath -Value $studentCode -Encoding UTF8 -Force
+    Write-Host "✓ Successfully replaced solution"
     
     # Проверяем результат
-    $newContent = Get-Content $ProjectFilePath -Raw
-    Write-Host "New file size: $($newContent.Length) characters"
+    $newContent = Get-Content $ProjectFilePath -Raw -Encoding UTF8
+    Write-Host "✓ New file size: $($newContent.Length) characters"
+    
+    # Показываем первые несколько строк для проверки
+    $preview = ($newContent -split "`n")[0..4] -join "`n"
+    Write-Host "Preview of new content:"
+    Write-Host $preview
 }
 catch {
-    Write-Error "Failed to replace solution: $_"
+    Write-Error "❌ Failed to replace solution: $_"
     # Восстанавливаем backup при ошибке
-    Copy-Item -Path $backupFile -Destination $ProjectFilePath -Force
-    Write-Host "Restored original file from backup"
+    try {
+        Copy-Item -Path $backupFile -Destination $ProjectFilePath -Force
+        Write-Host "✓ Restored original file from backup"
+    }
+    catch {
+        Write-Error "❌ Failed to restore backup: $_"
+    }
     exit 1
 }
+
+Write-Host "=== Solution Replacement Complete ==="
