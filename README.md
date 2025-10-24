@@ -1,8 +1,9 @@
 # distance-mstest
 ## Структура проекта 
+```
 .github/
 └── workflows/
-    └── test-solutions.yml
+    └── test-runner.yml
 data/
 └── solutions.txt
 replace-solution.ps1
@@ -11,3 +12,4 @@ TestProject/
 ├── Program.cs
 ├── Tests.cs
 └── Distance.cs
+```
